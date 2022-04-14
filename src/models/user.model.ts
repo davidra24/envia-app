@@ -1,5 +1,6 @@
 export interface userInformationModel {
-  uid: string;
-  email: string;
+  uid?: string;
+  user: string;
   role: string;
+  token?: string;
 }

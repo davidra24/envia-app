@@ -1,8 +1,8 @@
 import { ActionModel, StateModel, ActionTypes } from '../models';
-import { SET_LOGGED, SET_GUIDE } from './constants';
+import { SET_USER, SET_GUIDE } from './constants';
 
 export const initialState: StateModel = {
-  isLogged: false,
+  user: undefined,
   guide: null
 };
 
@@ -11,10 +11,10 @@ export const reducer = (
   action: ActionModel<string, ActionTypes>
 ) => {
   switch (action.type) {
-    case SET_LOGGED:
+    case SET_USER:
       return {
         ...state,
-        isLogged: action.payload
+        user: action.payload
       };
     case SET_GUIDE: {
       return {
@@ -23,6 +23,6 @@ export const reducer = (
       };
     }
     default:
-      return state;
+      return { ...state };
   }
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, SafeAreaView } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   TextInput,
@@ -7,10 +8,6 @@ import {
   ActivityIndicator,
   Colors
 } from 'react-native-paper';
-import { styleLogin as style } from '../styles';
-import { RootStackParamListModel, userInformationModel } from '../models';
-import { Layout } from '../components/Layout.component';
-import { Text } from '../components/Themed';
 import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
@@ -18,9 +15,20 @@ import {
 } from 'firebase/auth';
 import { initializeAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { Layout } from '../components/Layout.component';
+import { styleLogin as style } from '../styles';
+import {
+  RootStackParamListModel,
+  StateModel,
+  userInformationModel
+} from '../models';
+import { Text } from '../components/Themed';
+import { setUser } from '../redux';
 import { firebaseApp } from '../config';
 import { REGEX_EMAIL } from '../utilities';
 import { DialogComponent } from '../components/DialogComponent';
+import { Base64 } from '../utilities/b64';
+import { getUserService } from '../utilities/userService';
 
 const auth = initializeAuth(firebaseApp);
 const firestore = getFirestore(firebaseApp);
@@ -35,6 +43,8 @@ export const LoginScreen = ({ navigation }: TLoginProps) => {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [typeDialog, setTypeDialog] = useState<string>('');
+
+  const dispatch = useDispatch();
 
   const {
     container,
@@ -54,13 +64,6 @@ export const LoginScreen = ({ navigation }: TLoginProps) => {
     setPasswordValue('');
   };
 
-  const getUserService = async (uid: string): Promise<userInformationModel> => {
-    const docRef = doc(firestore, `users/${uid}`);
-    const document = await getDoc(docRef);
-    const result = document.data() as userInformationModel;
-    return result;
-  };
-
   const setEmail = (email: string) => {
     setUserValue(email);
     setValidatedMail(REGEX_EMAIL.test(email));
@@ -78,13 +81,13 @@ export const LoginScreen = ({ navigation }: TLoginProps) => {
       const userCredential = await signInWithEmailAndPassword(
         auth,
         userValue,
-        passwordValue
+        Base64.btoa(passwordValue)
       );
       const { uid } = userCredential.user;
       const user = await getUserService(uid);
+      const token = await userCredential.user.getIdToken();
       if (user) {
-        const { role } = user;
-        console.warn({ role });
+        dispatch(setUser({ ...user, token }));
         setIsLoading(false);
         return navigation.replace('Root');
       } else {
@@ -96,18 +99,6 @@ export const LoginScreen = ({ navigation }: TLoginProps) => {
       return dialogManager('Usuario o contraseña invalidas', 'error');
     }
   };
-
-  useEffect(() => {
-    setIsLoading(true);
-    onAuthStateChanged(auth, (userFirebase) => {
-      if (userFirebase) {
-        setIsLoading(false);
-        navigation.replace('Root');
-      } else {
-        setIsLoading(false);
-      }
-    });
-  }, []);
 
   return (
     <SafeAreaView style={container}>

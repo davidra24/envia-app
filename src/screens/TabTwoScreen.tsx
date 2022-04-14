@@ -1,17 +1,17 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
-import { Button } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
-import { Text } from '../components/Themed';
-import { useLogout } from '../hooks';
+import { Button, Divider, Headline, Title } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { Text, View } from '../components/Themed';
 import { styleProfile as style } from '../styles/profile.style';
 import { initializeAuth, signOut } from 'firebase/auth';
 import { firebaseApp } from '../config';
+import { StateModel } from '../models';
 
 const auth = initializeAuth(firebaseApp);
 
-const { container } = style;
+const { container, upContainer } = style;
 
 type ProfileParams = {
   Login: undefined;
@@ -21,6 +21,7 @@ type ProfileParams = {
 type TProfileProps = NativeStackScreenProps<ProfileParams, 'Root'>;
 
 export const TabTwoScreen = ({ navigation }: TProfileProps) => {
+  const user = useSelector((state: StateModel) => state.reducer.user);
   const handleLogout = async () => {
     signOut(auth);
     navigation.replace('Login');
@@ -28,8 +29,11 @@ export const TabTwoScreen = ({ navigation }: TProfileProps) => {
 
   return (
     <SafeAreaView style={container}>
-      <Text>Inicio</Text>
-      <Text>Bienvenido</Text>
+      <View style={upContainer}>
+        <Title>Bienvenido </Title>
+        <Headline>{user?.user}</Headline>
+        <Divider />
+      </View>
       <Button onPress={handleLogout}>Cerrar Sesión</Button>
     </SafeAreaView>
   );

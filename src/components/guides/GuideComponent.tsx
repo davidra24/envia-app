@@ -6,6 +6,7 @@ import {
   Button,
   Caption,
   Divider,
+  List,
   Paragraph,
   Subheading,
   Title
@@ -73,55 +74,56 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
           content={address_addressee_in_guide}
         />
       </View>
-      <View style={style.informationView}>
-        <Title style={style.centerTitle}>Información de remitente</Title>
-        <Divider />
-        <InformationComponent
-          title='documento remitente: '
-          content={document_sender}
-        />
-        <InformationComponent
-          title='Nombre remitente: '
-          content={`${first_name_sender} ${last_name_sender}`}
-        />
-        <InformationComponent
-          title='Dirección remitente: '
-          content={address_sender}
-        />
-        <InformationComponent
-          title='Teléfono remitente: '
-          content={phone_sender}
-        />
-        <InformationComponent
-          title='Codigo postal remitente: '
-          content={postal_code_sender}
-        />
-      </View>
-      <View style={style.informationView}>
-        <Title style={style.centerTitle}>Información de destinatario </Title>
-        <Divider />
-        <InformationComponent
-          title='documento destinatario: '
-          content={document_addressee}
-        />
-        <InformationComponent
-          title='Nombre destinatario: '
-          content={`${first_name_addressee} ${last_name_addressee}`}
-        />
-        <InformationComponent
-          title='Dirección destinatario: '
-          content={address_addressee}
-        />
-        <InformationComponent
-          title='Teléfono destinatario: '
-          content={phone_addressee}
-        />
-        <InformationComponent
-          title='Codigo postal destinatario: '
-          content={postal_code_addressee}
-        />
-      </View>
-      <Button onPress={() => console.log('cambia')}>Cambiar Estado</Button>
+      <List.AccordionGroup>
+        <View style={style.informationView}>
+          <List.Accordion title='Información de remitente' id='1'>
+            <Divider />
+            <InformationComponent
+              title='Documento: '
+              content={document_sender}
+            />
+            <InformationComponent
+              title='Nombre: '
+              content={`${first_name_sender} ${last_name_sender}`}
+            />
+            <InformationComponent
+              title='Dirección: '
+              content={address_sender}
+            />
+            <InformationComponent title='Teléfono: ' content={phone_sender} />
+            <InformationComponent
+              title='Codigo postal: '
+              content={postal_code_sender}
+            />
+          </List.Accordion>
+        </View>
+        <View style={style.informationView}>
+          <List.Accordion title='Información de destinatario' id='2'>
+            <Divider />
+            <InformationComponent
+              title='documento: '
+              content={document_addressee}
+            />
+            <InformationComponent
+              title='Nombre: '
+              content={`${first_name_addressee} ${last_name_addressee}`}
+            />
+            <InformationComponent
+              title='Dirección: '
+              content={address_addressee}
+            />
+            <InformationComponent
+              title='Teléfono: '
+              content={phone_addressee}
+            />
+            <InformationComponent
+              title='Codigo postal: '
+              content={postal_code_addressee}
+            />
+          </List.Accordion>
+        </View>
+      </List.AccordionGroup>
+      <Button onPress={() => console.log('cambia')}>Definir ruta</Button>
     </View>
   );
 };

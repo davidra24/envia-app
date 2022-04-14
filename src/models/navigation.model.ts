@@ -9,12 +9,19 @@ import {
   NavigatorScreenParams
 } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { userInformationModel } from './user.model';
 
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamListModel {}
   }
 }
+export type RootTabParamListModel = {
+  TabOne: undefined;
+  TabTwo: undefined;
+  QRLector: undefined;
+  GuideModal: { id: string };
+};
 
 export type RootStackParamListModel = {
   Login: undefined;
@@ -27,13 +34,6 @@ export type RootStackParamListModel = {
 export type RootStackScreenPropsModel<
   Screen extends keyof RootStackParamListModel
 > = NativeStackScreenProps<RootStackParamListModel, Screen>;
-
-export type RootTabParamListModel = {
-  TabOne: undefined;
-  TabTwo: undefined;
-  QRLector: undefined;
-  GuideModal: { id: string };
-};
 
 export type RootTabScreenPropsModel<
   Screen extends keyof RootTabParamListModel

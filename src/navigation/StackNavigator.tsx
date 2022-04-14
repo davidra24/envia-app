@@ -2,34 +2,51 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoginScreen, ModalScreen } from '../screens';
-import { RootStackParamListModel, StateModel } from '../models';
-import { setLoginAction, SET_LOGGED } from '../redux';
+import {
+  RootStackParamListModel,
+  StateModel,
+  userInformationModel
+} from '../models';
 import { TabNavigator } from './TabNavigator';
 import { NotFoundScreen } from '../screens';
 import { QRLectorModal } from '../screens/QRLectorModal';
 import { GuideModal } from '../screens/GuideScreen';
+import { initializeAuth, onAuthStateChanged } from 'firebase/auth';
+import { firebaseApp } from '../config';
+import { getFirestore } from 'firebase/firestore';
+import { getUserService } from '../utilities/userService';
+import { setUser } from '../redux';
 
 const { Navigator, Screen, Group } =
   createNativeStackNavigator<RootStackParamListModel>();
 
-export const StackNavigator = () => {
-  const dispatch = useDispatch();
-  const isLoggedIn = useSelector<StateModel, boolean>(
-    (state) => state.isLogged
-  );
+const auth = initializeAuth(firebaseApp);
 
-  /* const comprobateSigned = async () => {
-    const user = isSigned();
-    dispatch({ type: SET_LOGGED, action: setLoginAction(!!user) });
-  };
+export const StackNavigator = () => {
+  const user = useSelector<StateModel, userInformationModel | undefined>(
+    (state) => state.reducer.user
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    comprobateSigned();
-  }, []); */
+    const unlisten = onAuthStateChanged(auth, async (userFirebase) => {
+      if (!user) {
+        if (userFirebase) {
+          const { uid } = userFirebase;
+          const user = await getUserService(uid);
+          const token = await userFirebase.getIdToken();
+          dispatch(setUser({ ...user, token }));
+        }
+      }
+    });
+    return () => {
+      unlisten();
+    };
+  }, []);
 
   return (
     <Navigator
-      initialRouteName={!isLoggedIn ? 'Login' : 'Root'}
+      initialRouteName={!user ? 'Login' : 'Root'}
       screenOptions={{ headerShown: false }}
     >
       <Screen name='Login' component={LoginScreen} />
