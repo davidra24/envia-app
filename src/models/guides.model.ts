@@ -22,6 +22,7 @@ export interface GuideModel {
   service_value_guide: number;
   freight_guide: number;
   other_cost_guide: number;
+  origin_regional: string;
   origin_city: string;
   destination_city: string;
   destination_regional: string;
@@ -38,4 +39,5 @@ export interface GuideModel {
   address_addressee: string;
   phone_addressee: string;
   postal_code_addressee: string;
+  assigned_route: string;
 }

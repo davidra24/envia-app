@@ -9,9 +9,12 @@ import {
   List,
   Paragraph,
   Subheading,
+  TextInput,
   Title
 } from 'react-native-paper';
 import { InformationComponent } from './InformationComponent';
+import { ModalComponent } from '../ModalComponent';
+import { useState } from 'react';
 
 export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
   const {
@@ -20,6 +23,7 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
     date_admission,
     notes_guide,
     content_guide,
+    origin_regional,
     origin_city,
     destination_city,
     destination_regional,
@@ -35,8 +39,13 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
     last_name_addressee,
     address_addressee,
     phone_addressee,
-    postal_code_addressee
+    postal_code_addressee,
+    assigned_route
   } = guide;
+  const [visible, setVisible] = useState<boolean>(false);
+  const [suggestedRoute, setSuggestedRoute] = useState<string>(
+    assigned_route || ''
+  );
   return (
     <View style={style.container}>
       <Subheading style={style.idGuide}>{id_guide}</Subheading>
@@ -57,6 +66,10 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
       <View style={style.informationView}>
         <Title style={style.centerTitle}>Información de envío</Title>
         <Divider />
+        <InformationComponent
+          title='Regional de origen: '
+          content={origin_regional}
+        />
         <InformationComponent
           title='Ciudad de origen: '
           content={origin_city}
@@ -123,7 +136,21 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
           </List.Accordion>
         </View>
       </List.AccordionGroup>
-      <Button onPress={() => console.log('cambia')}>Definir ruta</Button>
+      <Button onPress={() => setVisible(true)}>Definir ruta</Button>
+      <ModalComponent visible={visible} setVisible={setVisible}>
+        <Text>
+          Ruta sugerida:{' '}
+          {suggestedRoute
+            ? suggestedRoute
+            : 'No se ha encontrado una ruta sugerida'}
+        </Text>
+        <TextInput
+          label='Ruta manual'
+          mode='outlined'
+          value={suggestedRoute}
+          onChangeText={setSuggestedRoute}
+        />
+      </ModalComponent>
     </View>
   );
 };

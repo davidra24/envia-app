@@ -1,13 +1,19 @@
-import { ActionModel, StateModel, ActionTypes } from '../models';
+import {
+  ActionModel,
+  StateModel,
+  ActionTypes,
+  StateReducerModel
+} from '../models';
 import { SET_USER, SET_GUIDE } from './constants';
 
-export const initialState: StateModel = {
+export const initialState: StateReducerModel = {
   user: undefined,
-  guide: null
+  guide: undefined,
+  guides: []
 };
 
 export const reducer = (
-  state: StateModel = initialState,
+  state: StateModel = { reducer: initialState },
   action: ActionModel<string, ActionTypes>
 ) => {
   switch (action.type) {

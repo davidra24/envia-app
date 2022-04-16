@@ -1,12 +1,15 @@
-import { setUser, setGuide } from '../redux';
+import { setUser, setGuide, setGuides } from '../redux';
 import { GuideModel } from './guides.model';
 import { userInformationModel } from './user.model';
 
 export interface StateModel {
-  reducer: {
-    user: userInformationModel | undefined;
-    guide: GuideModel | null;
-  };
+  reducer: StateReducerModel;
+}
+
+export interface StateReducerModel {
+  user: userInformationModel | undefined;
+  guide: GuideModel | undefined;
+  guides: Array<GuideModel> | undefined;
 }
 
 export interface ActionModel<T, P> {
@@ -14,6 +17,6 @@ export interface ActionModel<T, P> {
   readonly payload?: P;
 }
 
-type ACTION_TYPE = typeof setUser | typeof setGuide;
+type ACTION_TYPE = typeof setUser | typeof setGuide | typeof setGuides;
 
 export type ActionTypes = ReturnType<ACTION_TYPE>;

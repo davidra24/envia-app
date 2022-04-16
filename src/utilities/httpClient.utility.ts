@@ -1,4 +1,4 @@
-const HTTP_URL = 'https://envia-guide.herokuapp.com';
+const HTTP_URL = 'https://envia-guide.herokuapp.com/api';
 
 interface ClientModel<T, U> {
   baseUrl?: string;
@@ -21,11 +21,11 @@ export const getResource = async <T, U>({
       headers
     });
     if (response.ok) {
-      return await response.json();
+      return (await response.json()) as U;
     } else {
-      return {};
+      return undefined;
     }
   } catch (error) {
-    return {};
+    return undefined;
   }
 };
