@@ -1,9 +1,9 @@
+import React from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 import { Button, Divider, Headline, Title } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
-import { Text, View } from '../components/Themed';
+import { useSelector } from 'react-redux';
+import { View } from '../components/Themed';
 import { styleProfile as style } from '../styles/profile.style';
 import { initializeAuth, signOut } from 'firebase/auth';
 import { firebaseApp } from '../config';

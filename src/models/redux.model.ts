@@ -1,5 +1,5 @@
 import { setUser, setGuide, setGuides } from '../redux';
-import { GuideModel } from './guides.model';
+import { GuideViewModel } from './guides.model';
 import { userInformationModel } from './user.model';
 
 export interface StateModel {
@@ -8,8 +8,8 @@ export interface StateModel {
 
 export interface StateReducerModel {
   user: userInformationModel | undefined;
-  guide: GuideModel | undefined;
-  guides: Array<GuideModel> | undefined;
+  guide: GuideViewModel | undefined;
+  guides: Array<GuideViewModel> | undefined;
 }
 
 export interface ActionModel<T, P> {

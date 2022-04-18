@@ -1,10 +1,16 @@
-import { GuideModel } from '../../models';
-import { View, Text } from '../Themed';
-import { styleGuideComponent as style } from '../../styles';
-import { statusGuide } from '../../utilities';
 import {
+  GuideObject,
+  GuideViewModel,
+  RouteModel,
+  STATUS_ENUM
+} from '../../models';
+import { Text, View } from '../Themed';
+import { styleGuideComponent as style } from '../../styles';
+import { getResource, putResource, statusGuide } from '../../utilities';
+import {
+  ActivityIndicator,
   Button,
-  Caption,
+  Colors,
   Divider,
   List,
   Paragraph,
@@ -14,9 +20,20 @@ import {
 } from 'react-native-paper';
 import { InformationComponent } from './InformationComponent';
 import { ModalComponent } from '../ModalComponent';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
+export const GuideComponent = ({
+  guide,
+  navigation
+}: {
+  guide: GuideViewModel;
+  navigation: {
+    replace: Function;
+  };
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState<boolean>(false);
+
   const {
     id_guide,
     status_guide,
@@ -42,10 +59,57 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
     postal_code_addressee,
     assigned_route
   } = guide;
-  const [visible, setVisible] = useState<boolean>(false);
+
   const [suggestedRoute, setSuggestedRoute] = useState<string>(
     assigned_route || ''
   );
+
+  const findRoute = async (address: string) => {
+    setLoading(true);
+    try {
+      const addressRoute = await getResource<null, RouteModel>({
+        baseUrl: 'http://192.168.2.11:8080/api',
+        endpoint: `Route?address=${address}`
+      });
+      if (guide && addressRoute?.name) {
+        setSuggestedRoute(addressRoute?.name);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      setSuggestedRoute('');
+    }
+  };
+
+  useEffect(() => {
+    guide && findRoute(guide?.address_addressee_in_guide);
+  }, [guide]);
+
+  const saveRoute = () => {
+    if (suggestedRoute) {
+      setLoading(true);
+      try {
+        putResource<GuideObject, any>({
+          endpoint: `guides/pdf/${id_guide}`,
+          body: {
+            guide_person: {
+              assigned_route: suggestedRoute
+            },
+            guide: {
+              status_guide: 1
+            }
+          }
+        });
+        setLoading(false);
+        setVisible(false);
+        navigation.replace('Root');
+      } catch (error) {
+        setLoading(false);
+      }
+    }
+  };
+
   return (
     <View style={style.container}>
       <Subheading style={style.idGuide}>{id_guide}</Subheading>
@@ -136,20 +200,30 @@ export const GuideComponent = ({ guide }: { guide: GuideModel }) => {
           </List.Accordion>
         </View>
       </List.AccordionGroup>
-      <Button onPress={() => setVisible(true)}>Definir ruta</Button>
+      {assigned_route ? (
+        <Paragraph style={{ fontWeight: 'bold' }}>{assigned_route}</Paragraph>
+      ) : (
+        <Button onPress={() => setVisible(true)}>Definir ruta</Button>
+      )}
       <ModalComponent visible={visible} setVisible={setVisible}>
-        <Text>
-          Ruta sugerida:{' '}
-          {suggestedRoute
-            ? suggestedRoute
-            : 'No se ha encontrado una ruta sugerida'}
-        </Text>
-        <TextInput
-          label='Ruta manual'
-          mode='outlined'
-          value={suggestedRoute}
-          onChangeText={setSuggestedRoute}
-        />
+        {loading ? (
+          <ActivityIndicator
+            animating={true}
+            color={Colors.red800}
+            size='large'
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          />
+        ) : (
+          <View>
+            <Title>Ruta sugerida:</Title>
+            <TextInput
+              value={suggestedRoute}
+              onChangeText={setSuggestedRoute}
+              placeholder='Escribe la ruta sugerida...'
+            />
+            <Button onPress={saveRoute}>Ok</Button>
+          </View>
+        )}
       </ModalComponent>
     </View>
   );

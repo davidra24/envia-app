@@ -1,4 +1,4 @@
-import { GuideModel, userInformationModel } from '../models';
+import { GuideViewModel, userInformationModel } from '../models';
 import { SET_GUIDE, SET_GUIDES, SET_USER } from './constants';
 
 export const setUser = (payload: userInformationModel) => ({
@@ -6,12 +6,12 @@ export const setUser = (payload: userInformationModel) => ({
   payload
 });
 
-export const setGuide = (payload: GuideModel | undefined) => ({
+export const setGuide = (payload: GuideViewModel | undefined) => ({
   type: SET_GUIDE,
   payload
 });
 
-export const setGuides = (payload: Array<GuideModel> | undefined) => ({
+export const setGuides = (payload: Array<GuideViewModel> | undefined) => ({
   type: SET_GUIDES,
   payload
 });

@@ -20,6 +20,7 @@ export type RootTabParamListModel = {
   TabTwo: undefined;
   QRLector: undefined;
   GuideModal: { id: string };
+  PDFReader: { base64: string };
 };
 
 export type RootStackParamListModel = {
@@ -28,6 +29,7 @@ export type RootStackParamListModel = {
   QRLector: undefined;
   GuideModal: { id: string };
   NotFound: undefined;
+  PDFReader: { base64: string };
 };
 
 export type RootStackScreenPropsModel<

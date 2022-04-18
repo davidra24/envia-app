@@ -1,3 +1,5 @@
+import { PersonModel, GuidePersonModel } from './person.model';
+
 export enum STATUS_ENUM {
   CREATED = 0,
   IN_REGIONAL = 1,
@@ -8,7 +10,7 @@ export enum STATUS_ENUM {
   REJECTED_BY_CUSTOMER_DOES_NOT_FOUND = 6
 }
 
-export interface GuideModel {
+export interface GuideViewModel {
   id_guide: string;
   status_guide: STATUS_ENUM;
   date_admission: Date;
@@ -40,4 +42,28 @@ export interface GuideModel {
   phone_addressee: string;
   postal_code_addressee: string;
   assigned_route: string;
+}
+
+export interface GuideModel {
+  id_guide?: string;
+  content_guide?: string;
+  date_admission?: Date;
+  declared_value_guide?: number;
+  freight_guide?: number;
+  notes_guide?: string;
+  other_cost_guide?: number;
+  service_value_guide?: number;
+  status_guide?: number;
+  units_in_guide?: number;
+  volume_in_guide?: number;
+  weight_in_guide?: number;
+  weight_payment_guide?: number;
+}
+
+export interface GuideObject {
+  id?: string;
+  addressee?: PersonModel;
+  guide?: GuideModel;
+  guide_person?: GuidePersonModel;
+  sender?: PersonModel;
 }

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Text, View } from '../components/Themed';
-import { GuideModel } from '../models';
+import { GuideViewModel, StateModel } from '../models';
 import { getResource } from '../utilities';
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import { GuidesList } from '../components/guides/GuidesList';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { setGuides as dispatchGuides } from '../redux';
 
 type ProfileParams = {
   Login: undefined;
@@ -17,14 +19,16 @@ type TGuidesProps = NativeStackScreenProps<ProfileParams, 'Root'>;
 
 export const TabOneScreen = ({ navigation }: TGuidesProps) => {
   const [loading, setLoading] = useState(false);
-  const [guides, setGuides] = useState<Array<GuideModel>>([]);
+  const [guides, setGuides] = useState<Array<GuideViewModel>>([]);
+  const dispatch = useDispatch();
 
   const callCreatedGuides = async () => {
     setLoading(true);
-    const guides = await getResource<null, Array<GuideModel>>({
+    const guides = await getResource<null, Array<GuideViewModel>>({
       endpoint: 'guides_view?status=0'
     });
     if (guides !== undefined && Object.keys(guides).length) {
+      dispatch(dispatchGuides(guides));
       setGuides(guides);
     }
     setLoading(false);
@@ -32,6 +36,10 @@ export const TabOneScreen = ({ navigation }: TGuidesProps) => {
 
   useEffect(() => {
     callCreatedGuides();
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      callCreatedGuides();
+    });
+    return willFocusSubscription;
   }, []);
 
   return (

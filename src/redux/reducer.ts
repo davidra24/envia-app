@@ -4,7 +4,7 @@ import {
   ActionTypes,
   StateReducerModel
 } from '../models';
-import { SET_USER, SET_GUIDE } from './constants';
+import { SET_USER, SET_GUIDE, SET_GUIDES } from './constants';
 
 export const initialState: StateReducerModel = {
   user: undefined,
@@ -26,6 +26,12 @@ export const reducer = (
       return {
         ...state,
         guide: action.payload
+      };
+    }
+    case SET_GUIDES: {
+      return {
+        ...state,
+        guides: action.payload
       };
     }
     default:

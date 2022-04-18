@@ -24,6 +24,7 @@ export const linking: LinkingOptions<RootStackParamListModel> = {
       },
       QRLector: 'QRLector',
       GuideModal: 'GuideModal',
+      PDFReader: 'PDFReader',
       NotFound: '*'
     }
   }

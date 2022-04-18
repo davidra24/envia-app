@@ -1,5 +1,7 @@
 import * as React from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
 import { Modal, Portal, Text, Button, Provider } from 'react-native-paper';
+import { View } from './Themed';
 
 interface ModalComponentPros {
   visible: boolean;
@@ -12,7 +14,16 @@ export const ModalComponent = ({
   setVisible,
   children
 }: ModalComponentPros) => {
-  const containerStyle = { backgroundColor: 'white', padding: 20 };
+  const stylesModal = StyleSheet.create({
+    containerStyle: {
+      alignItems: 'center'
+    },
+    modalContainer: {
+      width: '92%',
+      paddingHorizontal: 20,
+      paddingVertical: 25
+    }
+  });
 
   return (
     <Provider>
@@ -20,9 +31,9 @@ export const ModalComponent = ({
         <Modal
           visible={visible}
           onDismiss={() => setVisible(false)}
-          contentContainerStyle={containerStyle}
+          contentContainerStyle={stylesModal.containerStyle}
         >
-          {children}
+          <View style={stylesModal.modalContainer}>{children}</View>
         </Modal>
       </Portal>
     </Provider>

@@ -16,6 +16,7 @@ import { firebaseApp } from '../config';
 import { getFirestore } from 'firebase/firestore';
 import { getUserService } from '../utilities/userService';
 import { setUser } from '../redux';
+import { PDFRender } from '../screens/PDFRender';
 
 const { Navigator, Screen, Group } =
   createNativeStackNavigator<RootStackParamListModel>();
@@ -60,13 +61,18 @@ export const StackNavigator = () => {
         component={NotFoundScreen}
         options={{ title: 'Oops!' }}
       />
+      <Screen
+        name='GuideModal'
+        component={GuideModal}
+        options={{
+          headerShown: true,
+          title: 'Información de guia',
+          headerBackButtonMenuEnabled: true
+        }}
+      />
       <Group screenOptions={{ presentation: 'modal' }}>
         <Screen name='QRLector' component={QRLectorModal} />
-        <Screen
-          name='GuideModal'
-          component={GuideModal}
-          options={{ headerShown: true, title: 'Información de guia' }}
-        />
+        <Screen name='PDFReader' component={PDFRender} />
       </Group>
     </Navigator>
   );

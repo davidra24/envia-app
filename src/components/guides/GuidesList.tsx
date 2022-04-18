@@ -1,12 +1,13 @@
 import { ScrollView } from 'react-native';
-import { GuideModel } from '../../models';
+import { GuideViewModel } from '../../models';
 import { View } from '../Themed';
 import { GuideItem } from './GuideItem';
 
 interface GuidesListProps {
-  guides: Array<GuideModel>;
+  guides: Array<GuideViewModel>;
   navigation: {
     navigate: Function;
+    replace: Function;
   };
 }
 
