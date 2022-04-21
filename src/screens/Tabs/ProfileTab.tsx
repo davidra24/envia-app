@@ -3,11 +3,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native';
 import { Button, Divider, Headline, Title } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { View } from '../components/Themed';
-import { styleProfile as style } from '../styles/profile.style';
+import { View } from '../../components/Themed';
+import { styleProfile as style } from '../../styles/profile.style';
 import { initializeAuth, signOut } from 'firebase/auth';
-import { firebaseApp } from '../config';
-import { StateModel } from '../models';
+import { firebaseApp } from '../../config';
+import { StateModel } from '../../models';
 
 const auth = initializeAuth(firebaseApp);
 
@@ -20,7 +20,7 @@ type ProfileParams = {
 
 type TProfileProps = NativeStackScreenProps<ProfileParams, 'Root'>;
 
-export const TabTwoScreen = ({ navigation }: TProfileProps) => {
+export const ProfileTab = ({ navigation }: TProfileProps) => {
   const user = useSelector((state: StateModel) => state.reducer.user);
   const handleLogout = async () => {
     signOut(auth);

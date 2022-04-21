@@ -35,10 +35,10 @@ const LeftContent = (props: any) => {
     <IconButton
       {...props}
       style={{ marginEnd: 10 }}
-      icon='folder'
+      icon='folder-download'
       onPress={() => {
         setLoading(true);
-        pdfReader(navigation, id_guide);
+        pdfReader(navigation, id_guide, setLoading);
       }}
     />
   );
@@ -46,13 +46,16 @@ const LeftContent = (props: any) => {
 
 const pdfReader = async (
   navigation: { navigate: Function },
-  id_guide: string
+  id_guide: string,
+  setLoading: Function
 ) => {
   const base64 = await getTextResource({
     endpoint: `guides_view/${id_guide}?pdf=true`
   });
   if (base64) {
     await navigation.navigate('PDFReader', { base64 });
+  } else {
+    setLoading(false);
   }
 };
 
@@ -81,9 +84,9 @@ export const GuideItem = ({ guide, navigation }: GuidesListProps) => {
         </Card.Content>
         <Card.Actions style={{ justifyContent: 'flex-end' }}>
           <Button
-            onPress={() => {
-              navigation.replace('GuideModal', { id: guide.id_guide });
-            }}
+            onPress={() =>
+              navigation.navigate('GuideModal', { id: guide.id_guide })
+            }
           >
             Asignar ruta
           </Button>

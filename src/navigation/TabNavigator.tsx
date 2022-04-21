@@ -8,7 +8,7 @@ import {
   StateModel
 } from '../models';
 import { useSelector } from 'react-redux';
-import { TabOneScreen, TabTwoScreen } from '../screens';
+import { GuideListTab, ProfileTab, DeliveryTab, VehicleTab } from '../screens';
 import { COLORS } from '../utilities';
 
 const TabBarIcon = (props: {
@@ -25,19 +25,23 @@ export const TabNavigator = () => {
   const user = useSelector((state: StateModel) => state.reducer.user);
 
   const isOperator = user?.role === 'operator';
+  const isDelivery = user?.role === 'delivery';
+  const isVehicle = user?.role === 'vehicles';
 
   return (
     <Navigator
-      initialRouteName='TabOne'
+      initialRouteName='GuideListTab'
       screenOptions={{
         tabBarActiveTintColor: COLORS[colorScheme].tint
       }}
     >
       {isOperator && (
         <Screen
-          name='TabOne'
-          component={TabOneScreen}
-          options={({ navigation }: RootTabScreenPropsModel<'TabOne'>) => ({
+          name='GuideListTab'
+          component={GuideListTab}
+          options={({
+            navigation
+          }: RootTabScreenPropsModel<'GuideListTab'>) => ({
             title: 'Inicio',
             tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />,
             headerRight: () => (
@@ -58,9 +62,29 @@ export const TabNavigator = () => {
           })}
         />
       )}
+      {isVehicle && (
+        <Screen
+          name='VehicleTab'
+          component={VehicleTab}
+          options={({}: RootTabScreenPropsModel<'VehicleTab'>) => ({
+            title: 'Salida de vehículos',
+            tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />
+          })}
+        />
+      )}
+      {isDelivery && (
+        <Screen
+          name='DeliveryTab'
+          component={DeliveryTab}
+          options={({}: RootTabScreenPropsModel<'DeliveryTab'>) => ({
+            title: 'Reparto',
+            tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />
+          })}
+        />
+      )}
       <Screen
-        name='TabTwo'
-        component={TabTwoScreen}
+        name='ProfileTab'
+        component={ProfileTab}
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />

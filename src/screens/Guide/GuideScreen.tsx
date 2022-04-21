@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, BackHandler } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setGuide as setGuideStorage } from '../redux';
 import { ActivityIndicator, Colors } from 'react-native-paper';
-
-import { Text, View } from '../components/Themed';
-import { GuideViewModel, RootTabScreenPropsModel, StateModel } from '../models';
-import { getResource } from '../utilities';
-import { GuideComponent } from '../components/guides/GuideComponent';
+import { setGuide as setGuideStorage } from '../../redux';
+import { Text, View } from '../../components/Themed';
+import {
+  GuideViewModel,
+  RootTabScreenPropsModel,
+  StateModel
+} from '../../models';
+import { getResource } from '../../utilities';
+import { GuideComponent } from '../../components/guides/GuideComponent';
 
 export const GuideModal = ({
   navigation,

@@ -16,8 +16,10 @@ declare global {
   }
 }
 export type RootTabParamListModel = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  GuideListTab: undefined;
+  DeliveryTab: undefined;
+  VehicleTab: undefined;
+  ProfileTab: undefined;
   QRLector: undefined;
   GuideModal: { id: string };
   PDFReader: { base64: string };

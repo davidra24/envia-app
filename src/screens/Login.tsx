@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, SafeAreaView } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   TextInput,
@@ -10,18 +10,13 @@ import {
 } from 'react-native-paper';
 import {
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  onAuthStateChanged
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { initializeAuth } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { Layout } from '../components/Layout.component';
 import { styleLogin as style } from '../styles';
-import {
-  RootStackParamListModel,
-  StateModel,
-  userInformationModel
-} from '../models';
+import { RootStackParamListModel } from '../models';
 import { Text } from '../components/Themed';
 import { setUser } from '../redux';
 import { firebaseApp } from '../config';

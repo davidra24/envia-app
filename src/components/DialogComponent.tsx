@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
 import { Snackbar } from 'react-native-paper';
+import { Text } from 'react-native';
 
 export const DIALOG = {
   INFORMATION: '#2177D1',
@@ -12,7 +11,7 @@ export const DIALOG = {
 interface DialogProps {
   visible: boolean;
   setVisible: Function;
-  message: string;
+  message?: string;
   type?: string;
   dismiss?: Function;
 }
@@ -44,7 +43,7 @@ export const DialogComponent = ({
         onPress: () => (dismiss ? dismiss() : setVisible(false))
       }}
     >
-      <Text style={{ color: 'white' }}>{message}</Text>
+      <Text style={{ color: 'white' }}>{message || ''}</Text>
     </Snackbar>
   );
 };

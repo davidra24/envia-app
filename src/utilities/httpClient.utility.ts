@@ -76,7 +76,7 @@ export const postResource = async <T, U>({
       method,
       headers,
       //signal: controller.signal,
-      body: JSON.stringify({ data: body })
+      body: JSON.stringify(body)
     });
     if (response.ok) {
       return (await response.json()) as U;

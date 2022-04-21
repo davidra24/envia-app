@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, PermissionStatus } from 'expo-camera';
 import { RootTabScreenPropsModel } from '../models';
 import { REGEX_GUIDE_UID } from '../utilities';
+import { ActivityIndicator, Colors } from 'react-native-paper';
 
 export const QRLectorModal = ({
   navigation
 }: RootTabScreenPropsModel<'QRLector'>) => {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      /** @ts-ignore */
-      setHasPermission(status === 'granted');
+      setHasPermission(status === PermissionStatus.GRANTED);
     })();
   }, []);
 
   if (hasPermission === null) {
-    return <View />;
+    return (
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator
+          animating={true}
+          color={Colors.red800}
+          size='large'
+        />
+      </View>
+    );
   }
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;

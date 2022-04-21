@@ -1,10 +1,5 @@
-import {
-  GuideObject,
-  GuideViewModel,
-  RouteModel,
-  STATUS_ENUM
-} from '../../models';
-import { Text, View } from '../Themed';
+import { GuideObject, GuideViewModel, RouteModel } from '../../models';
+import { View } from '../Themed';
 import { styleGuideComponent as style } from '../../styles';
 import { getResource, putResource, statusGuide } from '../../utilities';
 import {
@@ -68,7 +63,7 @@ export const GuideComponent = ({
     setLoading(true);
     try {
       const addressRoute = await getResource<null, RouteModel>({
-        baseUrl: 'http://192.168.2.11:8080/api',
+        baseUrl: 'http://192.168.2.13:8080/api',
         endpoint: `Route?address=${address}`
       });
       if (guide && addressRoute?.name) {
@@ -97,7 +92,7 @@ export const GuideComponent = ({
               assigned_route: suggestedRoute
             },
             guide: {
-              status_guide: 1
+              status_guide: 2
             }
           }
         });

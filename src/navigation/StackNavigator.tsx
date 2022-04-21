@@ -10,13 +10,14 @@ import {
 import { TabNavigator } from './TabNavigator';
 import { NotFoundScreen } from '../screens';
 import { QRLectorModal } from '../screens/QRLectorModal';
-import { GuideModal } from '../screens/GuideScreen';
+import { GuideModal } from '../screens/Guide/GuideScreen';
 import { initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import { firebaseApp } from '../config';
 import { getFirestore } from 'firebase/firestore';
 import { getUserService } from '../utilities/userService';
 import { setUser } from '../redux';
 import { PDFRender } from '../screens/PDFRender';
+import { ScreenStackHeaderBackButtonImage } from 'react-native-screens';
 
 const { Navigator, Screen, Group } =
   createNativeStackNavigator<RootStackParamListModel>();
