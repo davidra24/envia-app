@@ -3,11 +3,12 @@ import { PersonModel, GuidePersonModel } from './person.model';
 export enum STATUS_ENUM {
   CREATED = 0,
   IN_REGIONAL = 1,
-  CLASIFICATION = 2,
-  ON_REPART = 3,
-  CANCELED = 4,
-  REJECTED_BY_DOCUMENTATION_ERROR = 5,
-  REJECTED_BY_CUSTOMER_DOES_NOT_FOUND = 6
+  CLASSIFICATION = 2,
+  IN_DISTRIBUTION = 3,
+  GUIDE_DELIVERED = 4,
+  CANCELED = 5,
+  USER_NOY_FOUND = 6,
+  DOCUMENTATION_ERROR = 7
 }
 
 export interface GuideViewModel {

@@ -1,9 +1,4 @@
-import {
-  GuideObject,
-  GuideViewModel,
-  RouteModel,
-  STATUS_ENUM
-} from '../../models';
+import { GuideObject, GuideViewModel, RouteModel } from '../../models';
 import { Text, View } from '../Themed';
 import { styleGuideComponent as style } from '../../styles';
 import { getResource, putResource, statusGuide } from '../../utilities';
@@ -97,7 +92,7 @@ export const GuideComponent = ({
               assigned_route: suggestedRoute
             },
             guide: {
-              status_guide: 1
+              status_guide: 2
             }
           }
         });

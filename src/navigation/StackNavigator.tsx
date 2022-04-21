@@ -10,7 +10,7 @@ import {
 import { TabNavigator } from './TabNavigator';
 import { NotFoundScreen } from '../screens';
 import { QRLectorModal } from '../screens/QRLectorModal';
-import { GuideModal } from '../screens/GuideScreen';
+import { GuideModal } from '../screens/Guide/GuideScreen';
 import { initializeAuth, onAuthStateChanged } from 'firebase/auth';
 import { firebaseApp } from '../config';
 import { getFirestore } from 'firebase/firestore';

@@ -10,14 +10,19 @@ export const linking: LinkingOptions<RootStackParamListModel> = {
       Login: 'Login',
       Root: {
         screens: {
-          TabOne: {
+          GuideListTab: {
             screens: {
-              TabOneScreen: 'one'
+              GuideListTab: 'one'
             }
           },
-          TabTwo: {
+          DeliveryTab: {
             screens: {
-              TabTwoScreen: 'two'
+              DeliveryTab: 'two'
+            }
+          },
+          ProfileTab: {
+            screens: {
+              ProfileTab: 'three'
             }
           }
         }
