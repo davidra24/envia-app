@@ -11,5 +11,13 @@ export const styleProfile = StyleSheet.create({
   upContainer: {
     alignItems: 'center',
     backgroundColor: 'rgba(52, 52, 52, 0)'
+  },
+  button: {
+    backgroundColor: '#d4001b',
+    margin: 15,
+    paddingLeft: 0
+  },
+  inputText: {
+    paddingLeft: 0
   }
 });

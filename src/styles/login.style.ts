@@ -8,9 +8,9 @@ export const styleLogin = StyleSheet.create({
   topContainer: {
     flex: 1
   },
-  buttomContainer: {
+  buttonContainer: {
     flex: 0.8,
-    paddingTop: 20
+    marginTop: 150
   },
   logoImage: {
     alignSelf: 'center',
@@ -31,5 +31,9 @@ export const styleLogin = StyleSheet.create({
     backgroundColor: '#dfdfdf',
     marginHorizontal: 20,
     borderRadius: 25
+  },
+  buttonLogin: {
+    backgroundColor: '#d4001b',
+    marginBottom: 15
   }
 });
