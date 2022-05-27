@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { GuideObject, GuideViewModel, RouteModel } from '../../models';
 import { View } from '../Themed';
 import { styleGuideComponent as style } from '../../styles';
@@ -15,7 +16,9 @@ import {
 } from 'react-native-paper';
 import { InformationComponent } from './InformationComponent';
 import { ModalComponent } from '../ModalComponent';
-import { useEffect, useState } from 'react';
+import { PaperSelect } from 'react-native-paper-select';
+import { list } from 'react-native-paper-select/lib/typescript/interface/paperSelect.interface';
+import { useColorScheme } from 'react-native';
 
 export const GuideComponent = ({
   guide,
@@ -26,8 +29,11 @@ export const GuideComponent = ({
     replace: Function;
   };
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [listRoutes, setListRoutes] = useState<Array<list>>([]);
+  const [indexSelected, setIndexSelected] = useState(0);
+  const [error, setError] = useState<boolean>(false);
 
   const {
     id_guide,
@@ -55,53 +61,96 @@ export const GuideComponent = ({
     assigned_route
   } = guide;
 
-  const [suggestedRoute, setSuggestedRoute] = useState<string>(
+  /* const [suggestedRoute, setSuggestedRoute] = useState<string>(
     assigned_route || ''
+  ); */
+  const [selectedRoute, setSelectedRoute] = useState<string | undefined>(
+    assigned_route
   );
+
+  const [assignedRoute, setAssignedRoute] = useState<string>('');
+
+  const theme = useColorScheme();
 
   const findRoute = async (address: string) => {
     setLoading(true);
     try {
+      const newAddress = address.replace(/ /g, '%20').replace(/#/g, '%23');
       const addressRoute = await getResource<null, RouteModel>({
-        baseUrl: 'http://192.168.2.13:8080/api',
-        endpoint: `Route?address=${address}`
+        endpoint: `route?address=${newAddress}`
       });
-      if (guide && addressRoute?.name) {
-        setSuggestedRoute(addressRoute?.name);
+      if (guide && addressRoute?.Id) {
+        const index = listRoutes.findIndex(
+          (route) => route._id === addressRoute?.Id
+        );
+        const route = listRoutes.find(
+          (route) => route._id === addressRoute?.Id
+        );
+        setIndexSelected(index);
+        route && setAssignedRoute(route._id);
+        setSelectedRoute(route?.value);
       }
       setLoading(false);
     } catch (error) {
       setLoading(false);
       console.log(error);
-      setSuggestedRoute('');
+      setSelectedRoute(undefined);
     }
   };
+
+  const callListRoutes = async () => {
+    setLoading(true);
+    try {
+      const listRoutes = await getResource<null, Array<RouteModel>>({
+        endpoint: 'polygon'
+      });
+      const routes: list[] = listRoutes.map((route: RouteModel) => ({
+        _id: route.Id,
+        value: route.Name
+      })) as list[];
+      setListRoutes(routes);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+      setListRoutes([]);
+    }
+  };
+
+  useEffect(() => {
+    callListRoutes();
+  }, []);
 
   useEffect(() => {
     guide && findRoute(guide?.address_addressee_in_guide);
   }, [guide]);
 
-  const saveRoute = () => {
-    if (suggestedRoute) {
-      setLoading(true);
+  const saveRoute = async () => {
+    setVisible(false);
+    setLoading(true);
+    if (assignedRoute) {
+      setError(false);
       try {
-        putResource<GuideObject, any>({
+        const res = await putResource<GuideObject, any>({
           endpoint: `guides/pdf/${id_guide}`,
           body: {
             guide_person: {
-              assigned_route: suggestedRoute
+              assigned_route: assignedRoute
             },
             guide: {
               status_guide: 2
             }
           }
         });
-        setLoading(false);
-        setVisible(false);
-        navigation.replace('Root');
+        if (res) {
+          setLoading(false);
+          await navigation.replace('Root');
+        }
       } catch (error) {
         setLoading(false);
       }
+    } else {
+      setError(true);
     }
   };
 
@@ -210,11 +259,19 @@ export const GuideComponent = ({
           />
         ) : (
           <View>
-            <Title>Ruta sugerida:</Title>
-            <TextInput
-              value={suggestedRoute}
-              onChangeText={setSuggestedRoute}
-              placeholder='Escribe la ruta sugerida...'
+            <PaperSelect
+              label='Seleccione una ruta'
+              value={selectedRoute || ''}
+              onSelection={(value: any) => {
+                setError(false);
+                setSelectedRoute(value.text);
+                setAssignedRoute(value.selectedList[0]._id);
+              }}
+              arrayList={[...listRoutes]}
+              selectedArrayList={[listRoutes[indexSelected]]}
+              errorText={error ? 'Seleccione una ruta' : ''}
+              multiEnable={false}
+              textInputBackgroundColor={theme === 'dark' ? 'black' : 'white'}
             />
             <Button onPress={saveRoute}>Ok</Button>
           </View>

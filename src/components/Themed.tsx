@@ -4,6 +4,7 @@
  */
 
 import { Text as DefaultText, View as DefaultView } from 'react-native';
+import { BottomNavigation as DefaultBottomNavigation } from 'react-native-paper';
 
 import { COLORS } from '../utilities/constants/Colors';
 import { useColorScheme } from '../hooks/useColorScheme';
@@ -45,4 +46,15 @@ export function View(props: ViewProps) {
   );
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+export function BottomNavigation(props: any) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'background'
+  );
+  return (
+    <DefaultBottomNavigation barStyle={{ backgroundColor }} {...otherProps} />
+  );
 }

@@ -13,7 +13,6 @@ export const styleProfile = StyleSheet.create({
     backgroundColor: 'rgba(52, 52, 52, 0)'
   },
   button: {
-    backgroundColor: '#d4001b',
     margin: 15,
     paddingLeft: 0
   },

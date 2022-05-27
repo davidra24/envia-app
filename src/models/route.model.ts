@@ -1,6 +1,6 @@
 export interface RouteModel {
-  id?: number;
-  name?: string | null;
+  Id?: string | number;
+  Name?: string | null;
   description?: string | null;
   positions?: {
     latitude: number;

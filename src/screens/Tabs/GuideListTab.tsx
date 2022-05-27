@@ -1,13 +1,15 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import { GuideViewModel, RootTabScreenPropsModel } from '../../models';
 import { getResource } from '../../utilities';
 import { ActivityIndicator, Caption, Colors } from 'react-native-paper';
 import { GuidesList } from '../../components/guides/GuidesList';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useDispatch } from 'react-redux';
 import { setGuides as dispatchGuides } from '../../redux';
+import { RefreshView } from '../../containers/RefreshView';
+
+const STATUS_CREATED = 0;
 
 export const GuideListTab = ({
   navigation
@@ -19,7 +21,7 @@ export const GuideListTab = ({
   const callCreatedGuides = async () => {
     setLoading(true);
     const guides = await getResource<null, Array<GuideViewModel>>({
-      endpoint: 'guides_view?status=0'
+      endpoint: `guides_view?status=${STATUS_CREATED}`
     });
     if (guides !== undefined && Object.keys(guides).length) {
       dispatch(dispatchGuides(guides));
@@ -45,9 +47,13 @@ export const GuideListTab = ({
           size='large'
         />
       ) : guides && guides.length ? (
-        <GuidesList guides={guides} navigation={navigation} />
+        <RefreshView styles={styles} functionToCall={callCreatedGuides}>
+          <GuidesList guides={guides} navigation={navigation} />
+        </RefreshView>
       ) : (
-        <Caption>No hay guías disponibles para salida</Caption>
+        <RefreshView functionToCall={callCreatedGuides}>
+          <Caption>No hay guías disponibles para salida</Caption>
+        </RefreshView>
       )}
     </View>
   );

@@ -67,7 +67,7 @@ export const TabNavigator = () => {
           name='VehicleTab'
           component={VehicleTab}
           options={({}: RootTabScreenPropsModel<'VehicleTab'>) => ({
-            title: 'Salida de vehículos',
+            title: 'Vehículos',
             tabBarIcon: ({ color }) => <TabBarIcon name='code' color={color} />
           })}
         />

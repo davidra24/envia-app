@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import {
   Avatar,
@@ -7,8 +8,7 @@ import {
   Paragraph,
   Title
 } from 'react-native-paper';
-import { PackageDeliveryModel, VehiclesModel } from '../models/vehicles.model';
-import { postResource } from '../utilities';
+import { VehiclesModel } from '../models/vehicles.model';
 import { View } from './Themed';
 
 const LeftContent = (props: any) => (
@@ -24,28 +24,43 @@ export const VehicleItem = ({
   setVisible: Function;
   setSelectedVehicle: Function;
 }) => {
+  const vehicleInfo = useMemo(() => {
+    let status = '';
+    let message = '';
+    switch (vehicle.EstadoVehiculo) {
+      case 2:
+        status = 'LISTO PARA SALIR';
+        message = 'Dar salida';
+        break;
+      case 3:
+        status = 'EN REPARTO';
+        message = 'Terminar reparto';
+        break;
+    }
+    return { status, message };
+  }, [vehicle]);
+
   return (
     <View style={styles.container}>
       <Card>
-        <Caption style={styles.idVehicle}>{vehicle.id}</Caption>
+        <Caption style={styles.idVehicle}>{`Vehículo: ${vehicle.id}`}</Caption>
         <Card.Title
           title={vehicle.Nombre}
-          subtitle={vehicle.Placa}
+          subtitle={`Placa: ${vehicle.Placa}`}
           left={LeftContent}
         />
         <Card.Content>
-          <Title>Ruta definida: {vehicle.RutaDefinida}</Title>
-          <Paragraph>Estado: {vehicle.EstadoVehiculo}</Paragraph>
+          <Title>Ruta #: {vehicle.RutaDefinida}</Title>
+          <Paragraph>Estado: {vehicleInfo.status}</Paragraph>
         </Card.Content>
         <Card.Actions style={{ justifyContent: 'flex-end' }}>
           <Button
             onPress={() => {
               setSelectedVehicle(vehicle);
               setVisible(true);
-              // releaseVehicle();
             }}
           >
-            Dar salida
+            {vehicleInfo.message}
           </Button>
         </Card.Actions>
       </Card>

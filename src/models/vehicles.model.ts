@@ -11,3 +11,10 @@ export interface PackageDeliveryModel {
   notes: string;
   dateTime: Date;
 }
+
+export interface VehicleStatusModel {
+  dateTime: Date;
+  eventTipe: number | string;
+  notes?: string;
+  idVehicle: number | string;
+}

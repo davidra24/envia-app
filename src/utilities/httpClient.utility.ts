@@ -1,4 +1,4 @@
-const HTTP_URL = 'https://envia-guide.herokuapp.com/api';
+const HTTP_URL = 'https://enviaservices.404namenotfound.live/api';
 
 interface ClientModel<T> {
   baseUrl?: string;
@@ -20,22 +20,24 @@ export const getResource = async <T, U>({
   endpoint,
   method = 'GET',
   headers = defaultHeaders
-}: ClientModel<T>) => {
+}: ClientModel<T>): Promise<U> => {
   try {
     const URI_RESOURCE = `${baseUrl}/${endpoint}`;
+    console.log(URI_RESOURCE);
     const response = await fetch(URI_RESOURCE, {
       method,
       headers
       //signal: controller.signal
     });
+    console.log(response.status);
+
     if (response.ok) {
-      const json = await response.json();
-      return json;
+      return await response.json();
     } else {
-      return undefined;
+      return Promise.reject(undefined);
     }
   } catch (error) {
-    return undefined;
+    return Promise.reject(undefined);
   }
 };
 
@@ -47,6 +49,8 @@ export const getTextResource = async <T>({
 }: ClientModel<T>) => {
   try {
     const URI_RESOURCE = `${baseUrl}/${endpoint}`;
+    console.log(URI_RESOURCE);
+
     const response = await fetch(URI_RESOURCE, {
       method,
       headers
@@ -69,7 +73,7 @@ export const postResource = async <T, U>({
   method = 'POST',
   body,
   headers = defaultHeaders
-}: ClientModel<T>) => {
+}: ClientModel<T>): Promise<U> => {
   try {
     const URI_RESOURCE = `${baseUrl}/${endpoint}`;
     const response = await fetch(URI_RESOURCE, {
@@ -81,10 +85,10 @@ export const postResource = async <T, U>({
     if (response.ok) {
       return (await response.json()) as U;
     } else {
-      return undefined;
+      return Promise.reject(undefined);
     }
   } catch (error) {
-    return undefined;
+    return Promise.reject(undefined);
   }
 };
 
@@ -94,7 +98,7 @@ export const putResource = async <T, U>({
   method = 'PUT',
   body,
   headers = defaultHeaders
-}: ClientModel<T>) => {
+}: ClientModel<T>): Promise<U> => {
   try {
     const URI_RESOURCE = `${baseUrl}/${endpoint}`;
 
@@ -105,13 +109,11 @@ export const putResource = async <T, U>({
       body: JSON.stringify({ data: body })
     });
     if (response.ok) {
-      console.log(await response.json());
-
       return (await response.json()) as U;
     } else {
-      return undefined;
+      return Promise.reject(undefined);
     }
   } catch (error) {
-    return undefined;
+    return Promise.reject(undefined);
   }
 };

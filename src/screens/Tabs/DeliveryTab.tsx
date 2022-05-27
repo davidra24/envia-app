@@ -1,47 +1,59 @@
 import { firebaseApp } from '../../config';
-import {getResource, putResource} from "../../utilities";
-import { Text } from '../../components/Themed';
+import { getResource, putResource } from '../../utilities';
+import { View, Text } from '../../components/Themed';
 import React, { useEffect, useState } from 'react';
-import { Button, TextInput } from 'react-native-paper';
-import { initializeAuth, signOut } from 'firebase/auth';
+import { Button, Card, TextInput, Title } from 'react-native-paper';
+import { initializeAuth } from 'firebase/auth';
 import { SafeAreaView, ScrollView } from 'react-native';
-import { GuideViewModel, RouteModel } from '../../models';
+import { GuideViewModel, STATUS_ENUM } from '../../models';
 import { styleProfile as style } from '../../styles/profile.style';
-import { ActivityIndicator, Colors, List} from 'react-native-paper';
+import { ActivityIndicator, Colors, List } from 'react-native-paper';
 import { AssignedGuideModel } from '../../models/assignedGuide.model';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { InformationComponent } from '../../components/guides/InformationComponent';
-import {DialogComponent} from "../../components";
+import { DialogComponent, ModalComponent } from '../../components';
+import { VehiclesModel } from '../../models/vehicles.model';
+import { RefreshView } from '../../containers/RefreshView';
 
-const auth = initializeAuth(firebaseApp);
-const { button, inputText } = style;
-type ProfileParams = { Login: undefined; Root: undefined; };
+const { button } = style;
+type ProfileParams = { Login: undefined; Root: undefined };
 type TProfileProps = NativeStackScreenProps<ProfileParams, 'Root'>;
 
-export const DeliveryTab = ({ navigation }: TProfileProps) => {
+const STATUS_IN_DISTRIBUTION = 2;
+const STATUS_VEHICLE_DELIVERY = 3;
 
-  const [listGuidesByRoute, setListGuidesByRoute] = useState<Array<GuideViewModel>>([]);
+export const DeliveryTab = ({ navigation }: TProfileProps) => {
+  const [listGuidesByRoute, setListGuidesByRoute] = useState<
+    Array<GuideViewModel>
+  >([]);
   const [listGuides, setListGuides] = useState<Array<GuideViewModel>>([]);
-  const [listRoutes, setListRoutes] = useState<Array<RouteModel>>([]);
+  const [listRoutes, setListRoutes] = useState<Array<VehiclesModel>>([]);
   const [loading, setLoading] = useState(false);
   const [caseGuide] = useState<string>('');
   const [visibleDialog, setVisibleDialog] = useState<boolean>(false);
   const [message, setMessage] = useState<string | undefined>('');
   const [typeDialog, setTypeDialog] = useState<string>('');
+  const [visible, setVisible] = useState(false);
+  const [selectedGuide, setSelectedGuide] = useState<GuideViewModel>();
 
   useEffect(() => {
     callListRoutes();
     callListGuides();
-    return;
+    const willFocusSubscription = navigation.addListener('focus', () => {
+      callListRoutes();
+      callListGuides();
+    });
+    return willFocusSubscription;
   }, []);
 
   const callListRoutes = async () => {
     setLoading(true);
     try {
-      const listRoutes = await getResource<null, Array<RouteModel>>({
-        baseUrl: 'http://127.0.0.1:8080/api',
-        endpoint: 'polygon'
+      const listRoutes = await getResource<null, Array<VehiclesModel>>({
+        endpoint: `vehicles/vehiclesByStatus/${STATUS_VEHICLE_DELIVERY}`
       });
+      console.log(listRoutes);
+
       setListRoutes(listRoutes);
       setLoading(false);
     } catch (error) {
@@ -54,60 +66,67 @@ export const DeliveryTab = ({ navigation }: TProfileProps) => {
   const callListGuides = async () => {
     setLoading(true);
     const list = await getResource<null, Array<GuideViewModel>>({
-      baseUrl: 'https://envia-guide.herokuapp.com/api',
-      endpoint: `guides`
+      endpoint: `guides_view?status=${STATUS_IN_DISTRIBUTION}`
     });
     setListGuides(list);
     setLoading(false);
-  }
+  };
 
   const callListGuidesByRoute = async (id: number | undefined) => {
     setLoading(true);
     const list = await getResource<null, Array<AssignedGuideModel>>({
-      baseUrl: 'http://mcrvehiculos.us-3.evennode.com/api',
       endpoint: `assignedGuides/${id}`
     });
     setLoading(false);
     return list;
-  }
+  };
 
   const callDeliveredGuide = async (guide: GuideViewModel) => {
     setLoading(true);
-    await putResource<GuideViewModel, any>({
-      baseUrl: 'https://envia-guide.herokuapp.com/api',
-      endpoint: `guides/${guide.id_guide}`,
-      body: guide
-    });
+    try {
+      const putted = await putResource<GuideViewModel, any>({
+        endpoint: `guides/${guide.id_guide}`,
+        body: guide
+      });
+      if (putted) {
+        dialogManager('Se ha confirmado la entrega del paquete', 'success');
+      } else {
+        dialogManager('No se pudo confirmar la entrega del paquete', 'error');
+      }
+    } catch (error) {
+      dialogManager('No se pudo confirmar la entrega del paquete', 'error');
+      console.log(error);
+    }
+
     setLoading(false);
-    return;
-  }
+  };
 
   const handleSelectedRoute = (id: number | undefined) => {
-    id = 10;
-    callListGuidesByRoute(id).then(response => {
+    callListGuidesByRoute(id).then((response) => {
       let guides: Array<GuideViewModel> = [];
       response.forEach((assigned: AssignedGuideModel) => {
-        let item = listGuides.find(item => { return item.id_guide === assigned.Id})
+        let item = listGuides.find((item) => {
+          return item.id_guide === assigned.Id;
+        });
         if (item !== undefined) {
           guides.push(item);
         }
-      })
+      });
       setListGuidesByRoute(guides);
     });
   };
 
-  const confirmDeliveredGuide = async (guide: GuideViewModel, action: string) => {
+  const confirmDeliveredGuide = async (
+    guide: GuideViewModel,
+    action: string
+  ) => {
     if (action === 'report') {
-      guide.notes_guide = caseGuide
+      guide.notes_guide = caseGuide;
+    } else {
+      guide.status_guide = STATUS_ENUM.GUIDE_DELIVERED;
     }
-    callDeliveredGuide(guide).then(response => {
-      dialogManager('Se ha confirmado la entrega del paquete', 'success');
-      console.log(response);
-    }, error => {
-      dialogManager('No se pudo confirmar la entrega del paquete', 'error');
-      console.log(error);
-    })
-  }
+    await callDeliveredGuide(guide);
+  };
 
   const dialogManager = (message?: string, type?: string) => {
     setVisibleDialog(true);
@@ -116,45 +135,112 @@ export const DeliveryTab = ({ navigation }: TProfileProps) => {
   };
 
   return (
-      <SafeAreaView>
-        <ScrollView>
-          <List.Section title="Selecciona la ruta para ver las guías">
-            <List.Accordion title="Rutas">
-              {listRoutes.map(item =>
-                ( <List.Item title={item.name} onPress={() => {handleSelectedRoute(item.id)}}/> )
+    <SafeAreaView>
+      <RefreshView
+        functionToCall={async () => {
+          await callListRoutes();
+          await callListGuides();
+        }}
+      >
+        <List.Section title='Selecciona la ruta para ver las guías'>
+          <List.Accordion title='Rutas'>
+            {listRoutes &&
+              listRoutes.map(
+                (item, index) =>
+                  item.EstadoVehiculo && (
+                    <View key={index}>
+                      <List.Item
+                        title={item.Nombre}
+                        onPress={() => {
+                          handleSelectedRoute(item.id);
+                        }}
+                      />
+                    </View>
+                  )
               )}
-            </List.Accordion>
-          </List.Section>
+          </List.Accordion>
+        </List.Section>
 
-          { loading ? (
-              <ActivityIndicator animating={true} color={Colors.red800} size='large'/>
-          ) : listGuidesByRoute ? (
-              <List.Section title="Guías pendientes por entregar">
-                {listGuidesByRoute.map(item =>
-                    (<List.Accordion title={item.content_guide} left={props => <List.Icon {...props} icon="folder" />}>
-                      <InformationComponent title='Contenido: ' content={item.content_guide}/>
-                      <TextInput style={inputText} value={caseGuide} placeholder={'Reporta tu caso al momento de la entrega'}/>
-                      <Button onPress={() => {confirmDeliveredGuide(item, 'report')}} mode="contained" style={button} color={Colors.white}>
-                        Reportar caso
+        {loading ? (
+          <ActivityIndicator
+            animating={true}
+            color={Colors.red800}
+            size='large'
+          />
+        ) : listGuidesByRoute ? (
+          <List.Section title='Guías pendientes por entregar'>
+            {listGuidesByRoute.map((item, index) => (
+              <List.Accordion
+                key={index}
+                title={item.address_addressee_in_guide}
+                left={(props) => <List.Icon {...props} icon='folder' />}
+              >
+                <Card style={{ paddingLeft: 0 }}>
+                  <Card.Content>
+                    <Card.Title
+                      title={`${item.first_name_addressee} ${item.last_name_addressee}`}
+                      subtitle={`Contenido: ${item.content_guide}`}
+                    />
+                    <View
+                      style={{
+                        width: '100%',
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        padding: 0
+                      }}
+                    >
+                      <Button
+                        onPress={() => {
+                          setSelectedGuide(item);
+                          setVisible(true);
+                        }}
+                        style={button}
+                      >
+                        Reportar
                       </Button>
-                      <Button onPress={() => {confirmDeliveredGuide(item, '')}} mode="contained" style={button} color={Colors.white}>
+                      <Button
+                        onPress={() => {
+                          confirmDeliveredGuide(item, '');
+                        }}
+                        style={button}
+                      >
                         Confirmar entrega
                       </Button>
-
-                    </List.Accordion>)
-                )}
-              </List.Section>
-          ) : (
-              <Text>No hay guías pendientes por entregar</Text>
-          )}
-
-        </ScrollView>
-        <DialogComponent
-            visible={visibleDialog}
-            message={message}
-            setVisible={setVisibleDialog}
-            type={typeDialog}
-        />
-      </SafeAreaView>
+                    </View>
+                  </Card.Content>
+                </Card>
+              </List.Accordion>
+            ))}
+          </List.Section>
+        ) : (
+          <Text>No hay guías pendientes por entregar</Text>
+        )}
+      </RefreshView>
+      <ModalComponent visible={visible} setVisible={setVisible}>
+        <View>
+          <Title>Reportar caso:</Title>
+          <TextInput
+            value={caseGuide}
+            placeholder='Reporta tu caso al momento de la entrega'
+          />
+          <Button
+            onPress={() => {
+              if (selectedGuide) {
+                setVisible(false);
+                confirmDeliveredGuide(selectedGuide, 'report');
+              }
+            }}
+          >
+            Aceptar
+          </Button>
+        </View>
+      </ModalComponent>
+      <DialogComponent
+        visible={visibleDialog}
+        message={message}
+        setVisible={setVisibleDialog}
+        type={typeDialog}
+      />
+    </SafeAreaView>
   );
 };

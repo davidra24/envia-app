@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "EnviaMobile",
+    "name": "Envia",
+    "description": "App interna de envía para manejo de paquetes",
     "slug": "EnviaMobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,6 +21,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "co.envia.paqueteriapp",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

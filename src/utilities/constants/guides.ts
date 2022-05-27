@@ -1,7 +1,7 @@
 import { STATUS_ENUM } from '../../models';
 
 export const statusGuide = (status: STATUS_ENUM) => {
-  switch (parseInt(status.toString())) {
+  switch (status) {
     case 0: {
       return 'CREADA';
     }
