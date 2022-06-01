@@ -1,16 +1,13 @@
-import { firebaseApp } from '../../config';
 import { getResource, putResource } from '../../utilities';
 import { View, Text } from '../../components/Themed';
 import React, { useEffect, useState } from 'react';
 import { Button, Card, TextInput, Title } from 'react-native-paper';
-import { initializeAuth } from 'firebase/auth';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native';
 import { GuideViewModel, STATUS_ENUM } from '../../models';
 import { styleProfile as style } from '../../styles/profile.style';
 import { ActivityIndicator, Colors, List } from 'react-native-paper';
 import { AssignedGuideModel } from '../../models/assignedGuide.model';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { InformationComponent } from '../../components/guides/InformationComponent';
 import { DialogComponent, ModalComponent } from '../../components';
 import { VehiclesModel } from '../../models/vehicles.model';
 import { RefreshView } from '../../containers/RefreshView';
@@ -29,7 +26,7 @@ export const DeliveryTab = ({ navigation }: TProfileProps) => {
   const [listGuides, setListGuides] = useState<Array<GuideViewModel>>([]);
   const [listRoutes, setListRoutes] = useState<Array<VehiclesModel>>([]);
   const [loading, setLoading] = useState(false);
-  const [caseGuide] = useState<string>('');
+  const [caseGuide, setCaseGuide] = useState<string>('');
   const [visibleDialog, setVisibleDialog] = useState<boolean>(false);
   const [message, setMessage] = useState<string | undefined>('');
   const [typeDialog, setTypeDialog] = useState<string>('');
@@ -122,6 +119,7 @@ export const DeliveryTab = ({ navigation }: TProfileProps) => {
   ) => {
     if (action === 'report') {
       guide.notes_guide = caseGuide;
+      guide.status_guide = STATUS_ENUM.CLASSIFICATION;
     } else {
       guide.status_guide = STATUS_ENUM.GUIDE_DELIVERED;
     }
@@ -221,6 +219,7 @@ export const DeliveryTab = ({ navigation }: TProfileProps) => {
           <Title>Reportar caso:</Title>
           <TextInput
             value={caseGuide}
+            onChangeText={setCaseGuide}
             placeholder='Reporta tu caso al momento de la entrega'
           />
           <Button
